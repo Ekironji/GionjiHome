@@ -1,18 +1,37 @@
 package com.gionji.gionjihome;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.gionji.gionjihome.net.UDPClientBroadcastAsyncTask;
+import com.gionji.gionjihome.net.UDPClientBroadcastAsyncTask.IPAddressServerListener;
+import com.gionji.gionjihome.net.UDPSendCommandThread;
 
 public class GHMainActivity extends Activity implements OnClickListener{
 
 	ImageButton[] mImageButtons = new ImageButton[3];
+	TextView[] mTextViews       = new TextView[3];
 	
 	private boolean[] relays = {false, false, false};
+	private String[]  relaysNames = {"Luce","Luce","-"};
+		
+	private final static String MY_PREFERENCES = "MyPref";
+	private final static String IP_ADDRESS_KEY = "IpAddress"; 
+	private final static String RELAY_NAMES_KEY = "RelayNames"; 
+	private final static String NETWORK_SSID_KEY = "SSIDName"; 
+	
+	static SharedPreferences prefs;
+	
+	String ipAddress = "192.168.1.37";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,9 +42,30 @@ public class GHMainActivity extends Activity implements OnClickListener{
 		mImageButtons[1] = (ImageButton) findViewById(R.id.imageButton2);
 		mImageButtons[2] = (ImageButton) findViewById(R.id.imageButton3);
 		
+		mTextViews[0] = (TextView) findViewById(R.id.textView1);
+		mTextViews[1] = (TextView) findViewById(R.id.textView2);
+		mTextViews[2] = (TextView) findViewById(R.id.textView3);
+		
 		mImageButtons[0].setOnClickListener(this);
-		mImageButtons[1].setOnClickListener(this);
-		mImageButtons[2].setOnClickListener(this);
+		
+		for(int i=0; i<mImageButtons.length; i++){
+			mTextViews[i].setText(relaysNames[i]);
+			mImageButtons[i].setOnClickListener(this);
+			if(relays[i])
+				mImageButtons[i].setAlpha(1F);
+			else
+				mImageButtons[i].setAlpha(0.4F);
+		}
+		
+//		
+//		prefs = getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE);
+//		ipAddress = prefs.getString(IP_ADDRESS_KEY, null);		
+//		
+//		if (ipAddress != null) {
+//			
+//		}
+		
+		searchGionjiHome();	
 	}
 
 	@Override
@@ -42,6 +82,7 @@ public class GHMainActivity extends Activity implements OnClickListener{
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			searchGionjiHome();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -50,11 +91,14 @@ public class GHMainActivity extends Activity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()){
-		case R.id.imageButton1:			
+		case R.id.imageButton1:		
+			switchRelay(0);
 			break;
-		case R.id.imageButton2:
+		case R.id.imageButton2:	
+			switchRelay(1);
 			break;
-		case R.id.imageButton3:
+		case R.id.imageButton3:	
+			switchRelay(2);
 			break;
 		}
 	}
@@ -62,9 +106,55 @@ public class GHMainActivity extends Activity implements OnClickListener{
 	private void switchRelay(int i){
 		relays[i] = !relays[i];
 		if(relays[i])
-			mImageButtons[0].setAlpha(1.0f);		
+			mImageButtons[i].setAlpha(1.0f);		
 		else
-			mImageButtons[0].setAlpha(0.4f);
+			mImageButtons[i].setAlpha(0.4f);	
+		
+		sendRelayCommand();
+	}
+	
+	
+	private void sendRelayCommand(){
+		new UDPSendCommandThread(ipAddress, getRelayPacket()).start();
+	}
+	
+	
+	private byte getRelayPacket(){
+		byte msg = 0x40;
+		for(int i=0; i<relays.length; i++){
+			if(relays[i])
+				msg |= (0x01 << i);
+		}
+		return msg;
+	}
+	
+	
+	private void searchGionjiHome(){
+		UDPClientBroadcastAsyncTask task = new UDPClientBroadcastAsyncTask(this);
+		task.setIPAddressServerListener(new IPAddressServerListener() {
+			@Override
+			public void IPAddressServerFounded(String address) {
+				Toast.makeText(getApplicationContext(),
+						"Gionjihome found!! ip: " + address, Toast.LENGTH_SHORT)
+						.show();
+				ipAddress = address;
+//				ip.setText(address);
+//				SharedPreferences.Editor editor = prefs.edit();
+//				editor.putString(IP_ADDRESS_KEY, address);
+//				editor.commit();
+			}
+
+			@Override
+			public void IPAddressServerFailed() {
+				Toast.makeText(getApplicationContext(),
+						"Abajour not found :-(", Toast.LENGTH_SHORT).show();
+			}
+		});
+		task.setProgressDialogMessage("Wait until abajour is found...");
+		task.execute();
 		
 	}
+	
+	
+	
 }
