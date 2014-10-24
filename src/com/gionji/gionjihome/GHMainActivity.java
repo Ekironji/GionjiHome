@@ -2,8 +2,13 @@ package com.gionji.gionjihome;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,14 +29,21 @@ public class GHMainActivity extends Activity implements OnClickListener{
 	private boolean[] relays = {false, false, false};
 	private String[]  relaysNames = {"Luce","Luce","-"};
 		
-	private final static String MY_PREFERENCES = "MyPref";
-	private final static String IP_ADDRESS_KEY = "IpAddress"; 
-	private final static String RELAY_NAMES_KEY = "RelayNames"; 
+	private final static String MY_PREFERENCES   = "MyPref";
+	private final static String IP_ADDRESS_KEY   = "IpAddress"; 
+	private final static String RELAY_NAMES_KEY  = "RelayNames"; 
 	private final static String NETWORK_SSID_KEY = "SSIDName"; 
+	
+	private final static String RELAY_1_LABEL_KEY = "relay1";
+	private final static String RELAY_2_LABEL_KEY = "relay2";
+	private final static String RELAY_3_LABEL_KEY = "relay3";
 	
 	static SharedPreferences prefs;
 	
+	String ghSsid    = "";
 	String ipAddress = "192.168.1.37";
+	String ghId      = "";
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +60,14 @@ public class GHMainActivity extends Activity implements OnClickListener{
 		
 		mImageButtons[0].setOnClickListener(this);
 		
+
+		prefs = getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE);
+		prefs.getString(RELAY_1_LABEL_KEY, "");	
+		prefs.getString(RELAY_2_LABEL_KEY, "");	
+		prefs.getString(RELAY_3_LABEL_KEY, "");	
+		
+		
 		for(int i=0; i<mImageButtons.length; i++){
-			mTextViews[i].setText(relaysNames[i]);
 			mImageButtons[i].setOnClickListener(this);
 			if(relays[i])
 				mImageButtons[i].setAlpha(1F);
@@ -65,7 +83,25 @@ public class GHMainActivity extends Activity implements OnClickListener{
 //			
 //		}
 		
-		searchGionjiHome();	
+		
+		// sono connesso alla wifi
+		WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+		if (wifi.isWifiEnabled()){
+			//wifi is enabled
+			ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+			if (mWifi.isConnected()) {
+				searchGionjiHome();	
+			}
+			else{
+				startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+			}
+		}
+		else{
+			startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+		}
+		
 	}
 
 	@Override
@@ -133,11 +169,13 @@ public class GHMainActivity extends Activity implements OnClickListener{
 		UDPClientBroadcastAsyncTask task = new UDPClientBroadcastAsyncTask(this);
 		task.setIPAddressServerListener(new IPAddressServerListener() {
 			@Override
-			public void IPAddressServerFounded(String address) {
+			public void IPAddressServerFounded(String response) {
 				Toast.makeText(getApplicationContext(),
-						"Gionjihome found!! ip: " + address, Toast.LENGTH_SHORT)
+						"GionjiHome " + getId(response)  + " found! ip: " + getIpAddress(response), Toast.LENGTH_SHORT)
 						.show();
-				ipAddress = address;
+			
+				ipAddress = getIpAddress(response);
+				ghId = getId(response);
 //				ip.setText(address);
 //				SharedPreferences.Editor editor = prefs.edit();
 //				editor.putString(IP_ADDRESS_KEY, address);
@@ -156,5 +194,12 @@ public class GHMainActivity extends Activity implements OnClickListener{
 	}
 	
 	
+	static public String getIpAddress(String msg){
+		return msg.split("@")[1];
+	}
+	
+	static public String getId(String msg){
+		return msg.split("#")[1].split("@")[0];
+	}
 	
 }

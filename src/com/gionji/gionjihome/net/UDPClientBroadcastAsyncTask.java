@@ -25,6 +25,11 @@ public class UDPClientBroadcastAsyncTask extends AsyncTask<Void, Void, String> {
 	DatagramSocket datagramSocket;
 	InetAddress serverAddr;
 	private static final int TIMEOUT_MS = 4000;
+	
+	private static final String GIONJIHOME_LABEL = "gionjiHome";
+	private static final String MAC_SEPARATOR = "#";
+	private static final String IP_SEPARATOR  = "@";
+	
 	ProgressDialog dialog;
 	String progressDialogMessage = "Wait until server is found...";
 	private boolean running = true;
@@ -75,7 +80,7 @@ public class UDPClientBroadcastAsyncTask extends AsyncTask<Void, Void, String> {
 				Thread.sleep(30);
 				try {
 					while (running) {
-						byte[] buf = new byte[15];
+						byte[] buf = new byte[64];
 						DatagramPacket datagramReceivePacket = new DatagramPacket(
 								buf, buf.length);
 						
@@ -135,13 +140,28 @@ public class UDPClientBroadcastAsyncTask extends AsyncTask<Void, Void, String> {
 		return InetAddress.getByAddress(quads);
 	}
 
-	private boolean validateIPstring(final String ip) {
+	private boolean validateIPstring(final String response) {
+		
+		if(!response.contains(GIONJIHOME_LABEL))
+			return false;
+		
+		Log.i("UDPClientBroad", "Risposta al ciao: " + response);
+		
+		String ip = null;
+		try {
+			ip = response.split("@")[1];
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
 		Pattern pattern = Pattern
 				.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 						+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 						+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 						+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 		Matcher matcher = pattern.matcher(ip);
+				
 		return matcher.matches();
 	}
 
