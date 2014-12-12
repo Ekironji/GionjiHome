@@ -18,10 +18,13 @@ import android.util.Log;
 
 public class UDPClientBroadcastAsyncTask extends AsyncTask<Void, Void, String> {
 	private final String TAG = "UdpClientBroadcastAsyncTask";
+	
 	Context appContext;
+	
 	// UDP variables
 	int port = 9002;
 	byte[] outgoingBytes = new byte[4];
+	
 	DatagramSocket datagramSocket;
 	InetAddress serverAddr;
 	private static final int TIMEOUT_MS = 4000;
@@ -142,18 +145,18 @@ public class UDPClientBroadcastAsyncTask extends AsyncTask<Void, Void, String> {
 
 	private boolean validateIPstring(final String response) {
 		
-		if(!response.contains(GIONJIHOME_LABEL))
-			return false;
+//		if(!response.contains(GIONJIHOME_LABEL))
+//			return false;
 		
 		Log.i("UDPClientBroad", "Risposta al ciao: " + response);
 		
-		String ip = null;
-		try {
-			ip = response.split("@")[1];
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		String ip = response;
+//		try {
+//			ip = response.split("@")[1];
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return false;
+//		}
 		
 		Pattern pattern = Pattern
 				.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
@@ -185,14 +188,15 @@ public class UDPClientBroadcastAsyncTask extends AsyncTask<Void, Void, String> {
 		dialog.dismiss();
 	}
 
+	public static interface IPAddressServerListener {		
+		void IPAddressServerFounded(String address);
+		void IPAddressServerFailed();
+	}
+	
 	public void setIPAddressServerListener(
 			IPAddressServerListener ipAddressServerListener) {
 		this.ipAddressServerListener = ipAddressServerListener;
 	}
 
-	public static interface IPAddressServerListener {
-		void IPAddressServerFounded(String address);
-
-		void IPAddressServerFailed();
-	}
+	
 }
