@@ -30,22 +30,11 @@ public class GHMainActivity extends Activity implements OnClickListener{
 	ImageButton[] mImageButtons = new ImageButton[3];
 	TextView[] mTextViews       = new TextView[3];
 	
-	private boolean[] relays      = {false, false, false};
-	private String[]  relaysNames = {"Led","Switch","Video"};
-		
-	private final static String MY_PREFERENCES   = "MyPref";
-	private final static String IP_ADDRESS_KEY   = "IpAddress"; 
-	private final static String RELAY_NAMES_KEY  = "RelayNames"; 
-	private final static String NETWORK_SSID_KEY = "SSIDName"; 
-	
-	private final static String RELAY_1_LABEL_KEY = "relay1";
-	private final static String RELAY_2_LABEL_KEY = "relay2";
-	private final static String RELAY_3_LABEL_KEY = "relay3";
-	
-	static SharedPreferences prefs;
+	private boolean[] activeButtons      = {true, true, true};
+	private String[]  buttonLabels = {"Led","Switch","Video"};
 	
 	String ghSsid    = "";
-	String ipAddress = "192.168.1.37";
+	String ipAddress = "";
 	String ghId      = "";
 	
 	public static EkironjiDevice mEkironjiDevice = null;
@@ -55,34 +44,29 @@ public class GHMainActivity extends Activity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_udooxmas);
 		
+		// function buttons
 		mImageButtons[0] = (ImageButton) findViewById(R.id.imageButton1);
 		mImageButtons[1] = (ImageButton) findViewById(R.id.imageButton2);
 		mImageButtons[2] = (ImageButton) findViewById(R.id.imageButton3);
 		
+		// buttons labels
 		mTextViews[0] = (TextView) findViewById(R.id.textView1);
 		mTextViews[1] = (TextView) findViewById(R.id.textView2);
 		mTextViews[2] = (TextView) findViewById(R.id.textView3);
-		
-		mImageButtons[0].setOnClickListener(this);
-		
-		prefs = getSharedPreferences(MY_PREFERENCES, Context.MODE_PRIVATE);
-		prefs.getString(RELAY_1_LABEL_KEY, "");	
-		prefs.getString(RELAY_2_LABEL_KEY, "");	
-		prefs.getString(RELAY_3_LABEL_KEY, "");	
-		
-		
+
+		// getting buttons reference and setting onclicklistener
 		for(int i=0; i<mImageButtons.length; i++){
 			mImageButtons[i].setOnClickListener(this);
-			if(relays[i])
+			if(activeButtons[i])
 				mImageButtons[i].setAlpha(1F);
 			else
 				mImageButtons[i].setAlpha(0.4F);
 		}
 		
-
+		// instant
 		mEkironjiDevice = new EkironjiDevice(null);
 		
-		// sono connesso alla wifi
+		// Check wifi connection
 		WifiManager wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		if (wifi.isWifiEnabled()){
 			//wifi is enabled
@@ -90,7 +74,7 @@ public class GHMainActivity extends Activity implements OnClickListener{
 			NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
 			if (mWifi.isConnected()) {
-				//searchGionjiHome();	
+				searchUdooOverWifi();
 			}
 			else{
 				startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
@@ -108,11 +92,12 @@ public class GHMainActivity extends Activity implements OnClickListener{
 		return true;
 	}
 
+	// option to search udoo over wifi again
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
-			searchGionjiHome();
+			searchUdooOverWifi();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -121,11 +106,11 @@ public class GHMainActivity extends Activity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		
+		// check if UDOO was found over wifi
 		if(!mEkironjiDevice.isUdooPresent()){
 			Toast.makeText(getApplicationContext(),
 					"No Udoo found over Wifi, try search again in options menu", Toast.LENGTH_SHORT)
-					.show();	
-			
+					.show();				
 			return;
 		}
 		
@@ -141,63 +126,31 @@ public class GHMainActivity extends Activity implements OnClickListener{
 			break;
 		}
 	}
-	
-	private void switchRelay(int i){
-		relays[i] = !relays[i];
-		if(relays[i])
-			mImageButtons[i].setAlpha(1.0f);		
-		else
-			mImageButtons[i].setAlpha(0.4f);	
-		
-		sendRelayCommand();
-	}
-	
-	
-	private void sendRelayCommand(){
-		new UDPSendCommandThread(ipAddress, getRelayPacket()).start();
-	}
-	
-	
-	private byte getRelayPacket(){
-		byte msg = 0x40;
-		for(int i=0; i<relays.length; i++){
-			if(relays[i])
-				msg |= (0x01 << i);
-		}
-		return msg;
-	}
-	
-	
-	private void searchGionjiHome(){
+
+	private void searchUdooOverWifi(){
 		UDPClientBroadcastAsyncTask task = new UDPClientBroadcastAsyncTask(this);
 		task.setIPAddressServerListener(new IPAddressServerListener() {
 			@Override
 			public void IPAddressServerFounded(String response) {
-//				Toast.makeText(getApplicationContext(),
-//						"GionjiHome " + getId(response)  + " found! ip: " + getIpAddress(response), Toast.LENGTH_SHORT)
-//						.show();
-					
+
 				Toast.makeText(getApplicationContext(),
-						"GionjiHome found! ip: " +response, Toast.LENGTH_SHORT)
+						"UDOO found! ip: " +response, Toast.LENGTH_SHORT)
 						.show();	
 				
-				ipAddress = getIpAddress(response);
-				ghId = getId(response);
 				mEkironjiDevice.setIpAddress(ipAddress);
 			}
 
 			@Override
 			public void IPAddressServerFailed() {
 				Toast.makeText(getApplicationContext(),
-						"Udoo4Xmas not found :-(", Toast.LENGTH_SHORT).show();
+						"UDOO not found :-(", Toast.LENGTH_SHORT).show();
 			}
 		});
-		task.setProgressDialogMessage("Wait until Udoo4Xmas is found...");
+		task.setProgressDialogMessage("Wait until Udoo was found...");
 		task.execute();
 		
 	}
-	
-	
+		
 	static public String getIpAddress(String msg){
 		if (msg.contains("@"))
 			return msg.split("@")[1];
@@ -205,12 +158,5 @@ public class GHMainActivity extends Activity implements OnClickListener{
 			return msg;
 	}
 	
-	static public String getId(String msg){
-		if (msg.contains("@") && msg.contains("#") )
-			return msg.split("#")[1].split("@")[0];
-		else
-			return msg;
-		
-	}
 	
 }

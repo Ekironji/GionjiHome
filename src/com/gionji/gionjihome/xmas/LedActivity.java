@@ -80,8 +80,8 @@ public class LedActivity extends Activity implements ActionBar.TabListener {
 		getActionBar().setDisplayShowHomeEnabled(false);              
 		getActionBar().setDisplayShowTitleEnabled(false);
 		// Remove notification bar
-		this.getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN,
-		                           WindowManager.LayoutParams.FLAG_FULLSCREEN ); 
+//		this.getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//		                           WindowManager.LayoutParams.FLAG_FULLSCREEN ); 
 		
 	}
 

@@ -16,38 +16,41 @@
         android:layout_centerHorizontal="true"
         android:text="Video Player" />
 
-    <WebView
-        android:id="@+id/webView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout1"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView1" />
+    
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp" >
+        android:layout_marginTop="17dp"
+        android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/button1"
+        <ImageButton
+            android:id="@+id/imageButton1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Play" />
+            android:layout_height="0dip"
+            android:src="@drawable/video1_thumb"
+            android:scaleType="fitXY"
+            android:layout_weight="0.33" />
+        
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:src="@drawable/video2_thumb" 
+            android:scaleType="fitXY"
+            android:layout_weight="0.33" />
 
-        <Button
-            android:id="@+id/button2"
+        <ImageButton
+            android:id="@+id/imageButton3"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Loop" />
+            android:layout_height="0dip"
+            android:src="@drawable/video3_thumb"
+            android:scaleType="fitXY" 
+            android:layout_weight="0.33" />
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Stop" />
+
     </LinearLayout>
 
 </RelativeLayout>

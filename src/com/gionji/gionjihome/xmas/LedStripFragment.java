@@ -18,14 +18,24 @@ import com.gionji.gionjihome.xmas.HSVColorPickerDialog.OnColorSelectedListener;
 
 public class LedStripFragment extends Fragment implements OnClickListener {
 
+	// Main Activity reference
 	LedActivity mainActivity = null;
+	
+	// Led Tab id
 	int stripId = 0;
 	
-	int buttonIds[] = {R.id.chooseColorButton, R.id.turnOffButton, 
-			R.id.blinkButton, R.id.rainbowButton, R.id.setButton};
+	// View reference
+	int buttonIds[] = {R.id.chooseColorButton, 
+			R.id.turnOffButton, 
+			R.id.blinkButton, 
+			R.id.rainbowButton, 
+			R.id.setButton};
 	
+	// ArrayList containing buttons objects
 	ArrayList<Button> buttons = null;
 	
+	
+	// Constructor
 	public LedStripFragment(int stripId) {
 		this.stripId = stripId;
 	}
@@ -41,6 +51,7 @@ public class LedStripFragment extends Fragment implements OnClickListener {
 	    
 	    buttons = new ArrayList<Button>();
 	    
+	    // Getting reference to buttons and set onClickListener one or each buttons
 	    for(int i=0; i<buttonIds.length; i++){
 	    	buttons.add((Button) view.findViewById(buttonIds[i]));
 	    	buttons.get(i).setOnClickListener(this);
@@ -49,13 +60,14 @@ public class LedStripFragment extends Fragment implements OnClickListener {
 	    return view;
 	}
 	
+	// color picker alert object
+	private HSVColorPickerDialog cpd;
+	// selected color
+	private int lastColorSelected = Color.MAGENTA;
 	
-	HSVColorPickerDialog cpd;
-	private int lastColorSelected = Color.GREEN;
-	
+	// OnClickListener 
 	@Override
-	public void onClick(View v) {
-		
+	public void onClick(View v) {		
 		switch(v.getId()){
 		case R.id.chooseColorButton:
 			cpd = new HSVColorPickerDialog(mainActivity, lastColorSelected, new OnColorSelectedListener() {
@@ -69,8 +81,8 @@ public class LedStripFragment extends Fragment implements OnClickListener {
 			cpd.setTitle( "Pick a color" );
 			cpd.show();
 			break;
-		case R.id.turnOffButton:
-			GHMainActivity.mEkironjiDevice.sendSimpleColor(stripId, Color.BLACK);
+		case R.id.setButton:
+			GHMainActivity.mEkironjiDevice.sendSimpleColor(stripId, lastColorSelected);
 			break;
 		case R.id.blinkButton:
 			GHMainActivity.mEkironjiDevice.sendBlinkColor(stripId, lastColorSelected);
@@ -78,8 +90,8 @@ public class LedStripFragment extends Fragment implements OnClickListener {
 		case R.id.rainbowButton:
 			GHMainActivity.mEkironjiDevice.sendRainbowColor(stripId);
 			break;
-		case R.id.setButton:
-			GHMainActivity.mEkironjiDevice.sendSimpleColor(stripId, lastColorSelected);
+		case R.id.turnOffButton:
+			GHMainActivity.mEkironjiDevice.sendSimpleColor(stripId, Color.BLACK);
 			break;
 		}
 	}

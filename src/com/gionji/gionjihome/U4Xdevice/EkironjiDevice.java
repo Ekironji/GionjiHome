@@ -7,7 +7,13 @@ import android.util.Log;
 
 public class EkironjiDevice {
 
-	// mask
+	/**
+	 * These values are use to encode and decode an easy custom protocol
+	 * 
+	 * |__-__+__ __|__ __ __ __|__ __ __ __|__ __ __ __| (4 bytes)
+	 *  31       23          15           8           0      
+	 */	
+	// masks
 	public final static int OP_CODE_MASK       = 0xf0000000;
 	public final static int ID_CODE_MASK       = 0x0f000000;	
 	public final static int MAIN_OP_CODE_MASK  = 0xc0000000;
@@ -28,8 +34,7 @@ public class EkironjiDevice {
 	public final static int CMD_OFFSET    = 24;
 	public final static int RED_OFFSET    = 16;
 	public final static int GREEN_OFFSET  = 8;
-	public final static int BLUE_OFFSET   = 0;
-	
+	public final static int BLUE_OFFSET   = 0;	
 	
 	// MAIN op_codes
 	public final static int REQUEST_MSG   = 0x0;
@@ -40,9 +45,7 @@ public class EkironjiDevice {
 	// SUB op_codes
 	public final static int REQUEST_IP_DISCOVERY_MSG   = 0x0;
 	public final static int REQUEST_SERVICE_LIST_MSG   = 0x1;
-	public final static int REQUEST_GENERIC_MSG        = 0x2;
-	//public final static int VIDEO_MSG     = 0x3;
-	
+	public final static int REQUEST_GENERIC_MSG        = 0x2;	
 	
 	public final static int STRIP_DIRECT_MSG   = 0x0;
 	public final static int STRIP_FADE_MSG     = 0x1;
@@ -52,17 +55,18 @@ public class EkironjiDevice {
 	public final static int RELAY_OFF_MSG    = 0x0;
 	public final static int RELAY_ON_MSG     = 0x1;
 	public final static int RELAY_CHANGE_MSG = 0x2;
-	//public final static int VIDEO_MSG     = 0x3;
 	
 	public final static int VIDEO_GET_LIST_MSG   = 0x0;
 	public final static int VIDEO_PLAY_MSG       = 0x1;
 	public final static int VIDEO_PLAY_LOOP_MSG  = 0x2;
 	public final static int VIDEO_PLAY_EXTRA_MSG   = 0x3; // si usano i bit dell id per ulteriori comandi
+		
 	
+	private String ipAddress = null;
+//	private String id;
+//	private String name;
+//	private String SSID;
 	
-	
-	
-	String ipAddress = null;
 	
 	public EkironjiDevice(String ipAddress) {
 		this.ipAddress = ipAddress;
@@ -72,7 +76,7 @@ public class EkironjiDevice {
 		this.ipAddress = ip;
 	}
 	
-	
+	// It checks if a Udoo was found on the wifi
 	public boolean isUdooPresent(){
 		if(this.ipAddress == null)
 			return false;
@@ -80,7 +84,7 @@ public class EkironjiDevice {
 			return true;
 	}
 	
-	
+	// These methods can be use to send speciic methods
 	public void sendSimpleColor(int strip, int color){		
 		int msg = pack(STRIP_MSG, STRIP_DIRECT_MSG, strip, Color.red(color), Color.green(color), Color.blue(color) );	
 		sendMessage(msg);
@@ -130,7 +134,8 @@ public class EkironjiDevice {
 		sendMessage(msg);
 	}
 	
-
+	
+	// If app discovered an UDOO server over Wifi it sends a message 
 	private void sendMessage(int msg){
 		Log.i("EkironjiDevice", "msg: " + getBitString(msg) + " to IP: " + ipAddress);
 		if(ipAddress != null)
@@ -139,6 +144,7 @@ public class EkironjiDevice {
 			Log.e("EkironjiDevice", "Ip address is null");
 	}
 	
+	// This method pack the bits into an integer before send it over udp
 	private int pack(Integer mainOpCode, Integer subOpCode, Integer idCode, 
 			Integer r, Integer g, Integer b){		
 		int msg = 0;
@@ -161,7 +167,7 @@ public class EkironjiDevice {
 		return msg;
 	}
 	
-	
+	// It returns a string with bit representation of an integer
 	public String getBitString(int number){
 		String s = "";
 		
