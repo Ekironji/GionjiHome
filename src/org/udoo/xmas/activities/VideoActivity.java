@@ -1,4 +1,4 @@
-package com.gionji.gionjihome.xmas;
+package org.udoo.xmas.activities;
 
 import java.util.ArrayList;
 
@@ -9,8 +9,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 
-import com.gionji.gionjihome.GHMainActivity;
-import com.gionji.gionjihome.R;
+import org.udoo.xmas.R;
+import org.udoo.xmas.UMainActivity;
 
 public class VideoActivity extends Activity implements OnClickListener{
 		
@@ -36,13 +36,13 @@ public class VideoActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 		switch(v.getId()){
 		case R.id.imageButton1:
-			GHMainActivity.mEkironjiDevice.playVideo(1);
+			UMainActivity.mEkironjiDevice.playVideo(1);
 			break;
 		case R.id.imageButton2:
-			GHMainActivity.mEkironjiDevice.playVideo(2);
+			UMainActivity.mEkironjiDevice.playVideo(2);
 			break;
 		case R.id.imageButton3:
-			GHMainActivity.mEkironjiDevice.playVideo(3);
+			UMainActivity.mEkironjiDevice.playVideo(3);
 			break;
 		}
 		

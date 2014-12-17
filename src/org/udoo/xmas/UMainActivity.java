@@ -1,4 +1,4 @@
-package com.gionji.gionjihome;
+package org.udoo.xmas;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,15 +17,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gionji.gionjihome.U4Xdevice.EkironjiDevice;
-import com.gionji.gionjihome.net.UDPClientBroadcastAsyncTask;
-import com.gionji.gionjihome.net.UDPClientBroadcastAsyncTask.IPAddressServerListener;
-import com.gionji.gionjihome.net.UDPSendCommandThread;
-import com.gionji.gionjihome.xmas.LedActivity;
-import com.gionji.gionjihome.xmas.RelayActivity;
-import com.gionji.gionjihome.xmas.VideoActivity;
+import org.udoo.xmas.R;
+import org.udoo.xmas.activities.LedActivity;
+import org.udoo.xmas.activities.RelayActivity;
+import org.udoo.xmas.activities.VideoActivity;
+import org.udoo.xmas.device.EkironjiDevice;
+import org.udoo.xmas.net.UDPClientBroadcastAsyncTask;
+import org.udoo.xmas.net.UDPSendCommandThread;
+import org.udoo.xmas.net.UDPClientBroadcastAsyncTask.IPAddressServerListener;
 
-public class GHMainActivity extends Activity implements OnClickListener{
+public class UMainActivity extends Activity implements OnClickListener{
 
 	ImageButton[] mImageButtons = new ImageButton[3];
 	TextView[] mTextViews       = new TextView[3];

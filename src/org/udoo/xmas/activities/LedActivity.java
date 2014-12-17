@@ -1,4 +1,4 @@
-package com.gionji.gionjihome.xmas;
+package org.udoo.xmas.activities;
 
 import java.util.Locale;
 
@@ -15,7 +15,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.gionji.gionjihome.R;
+import org.udoo.xmas.R;
 
 public class LedActivity extends Activity implements ActionBar.TabListener {
 

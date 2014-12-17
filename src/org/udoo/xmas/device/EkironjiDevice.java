@@ -1,6 +1,6 @@
-package com.gionji.gionjihome.U4Xdevice;
+package org.udoo.xmas.device;
 
-import com.gionji.gionjihome.net.UDPSendCommandThread;
+import org.udoo.xmas.net.UDPSendCommandThread;
 
 import android.graphics.Color;
 import android.util.Log;

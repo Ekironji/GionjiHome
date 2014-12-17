@@ -1,4 +1,4 @@
-package com.gionji.gionjihome.xmas;
+package org.udoo.xmas.activities;
 
 import java.util.ArrayList;
 
@@ -12,9 +12,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.gionji.gionjihome.GHMainActivity;
-import com.gionji.gionjihome.R;
-import com.gionji.gionjihome.xmas.HSVColorPickerDialog.OnColorSelectedListener;
+import org.udoo.xmas.R;
+import org.udoo.xmas.UMainActivity;
+import org.udoo.xmas.activities.HSVColorPickerDialog.OnColorSelectedListener;
+
 
 public class LedStripFragment extends Fragment implements OnClickListener {
 
@@ -82,16 +83,16 @@ public class LedStripFragment extends Fragment implements OnClickListener {
 			cpd.show();
 			break;
 		case R.id.setButton:
-			GHMainActivity.mEkironjiDevice.sendSimpleColor(stripId, lastColorSelected);
+			UMainActivity.mEkironjiDevice.sendSimpleColor(stripId, lastColorSelected);
 			break;
 		case R.id.blinkButton:
-			GHMainActivity.mEkironjiDevice.sendBlinkColor(stripId, lastColorSelected);
+			UMainActivity.mEkironjiDevice.sendBlinkColor(stripId, lastColorSelected);
 			break;
 		case R.id.rainbowButton:
-			GHMainActivity.mEkironjiDevice.sendRainbowColor(stripId);
+			UMainActivity.mEkironjiDevice.sendRainbowColor(stripId);
 			break;
 		case R.id.turnOffButton:
-			GHMainActivity.mEkironjiDevice.sendSimpleColor(stripId, Color.BLACK);
+			UMainActivity.mEkironjiDevice.sendSimpleColor(stripId, Color.BLACK);
 			break;
 		}
 	}

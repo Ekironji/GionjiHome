@@ -1,4 +1,4 @@
-package com.gionji.gionjihome.xmas;
+package org.udoo.xmas.activities;
 
 import java.util.ArrayList;
 
@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.gionji.gionjihome.GHMainActivity;
-import com.gionji.gionjihome.R;
+import org.udoo.xmas.R;
+import org.udoo.xmas.UMainActivity;
 
 public class RelayActivity extends Activity implements OnClickListener{
 	
@@ -33,7 +33,7 @@ public class RelayActivity extends Activity implements OnClickListener{
 	public void onClick(View v) {
 		for(int i=0; i<buttonsIds.length; i++){
 			if(v.getId() == buttonsIds[i])
-				GHMainActivity.mEkironjiDevice.switchRelay(i);
+				UMainActivity.mEkironjiDevice.switchRelay(i);
 		}
 		
 	}

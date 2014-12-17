@@ -1,4 +1,4 @@
-package com.gionji.gionjihome.xmas;
+package org.udoo.xmas.activities;
 
 import android.app.AlertDialog;
 import android.content.Context;

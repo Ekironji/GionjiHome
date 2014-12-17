@@ -1,4 +1,4 @@
-package com.gionji.gionjihome.net;
+package org.udoo.xmas.net;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
